@@ -3,6 +3,7 @@ const handlebars = require("express-handlebars");
 const app = express();
 const mongodbConnection = require("./configs/mongodb-connection");
 const postService = require("./services/post-service");
+const { Collection } = require("mongoose");
 
 app.use(express.json());
 app.use(express.urlencoded({ dxtended: true }));
@@ -39,8 +40,11 @@ app.post("/write", async (req, res) => {
 });
 
 app.get("/detail/:id", async (req, res) => {
+  // 게시글 정보 가져오기
+  const result = await postService.getDetailPost(collection, req.params.id);
   res.render("detail", {
     title: "테스트 게시판",
+    post: result.value,
   });
 });
 
