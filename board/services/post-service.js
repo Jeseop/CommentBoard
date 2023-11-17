@@ -1,5 +1,5 @@
 const paginator = require("../utils/paginator");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 async function writePost(collection, post) {
   post.hits = 0;
@@ -30,14 +30,37 @@ const projectionOption = {
 
 async function getDetailPost(collection, id) {
   return await collection.findOneAndUpdate(
-    { _id: ObjectID(id) },
+    { _id: ObjectId(id) },
     { $inc: { hits: 1 } },
     projectionOption
   );
+}
+
+async function getPostByIDAndPassword(collection, { id, password }) {
+  return await collection.findOne(
+    { _id: ObjectId(id), password: password },
+    projectionOption
+  );
+}
+
+async function getPostById(collection, id) {
+  return await collection.findOne({ _id: ObjectId(id) }, projectionOption);
+}
+
+async function updatePost(collection, id, post) {
+  const toUpdatePost = {
+    $set: {
+      ...post,
+    },
+  };
+  return await collection.updateOne({ _id: ObjectId(id) }, toUpdatePost);
 }
 
 module.exports = {
   list,
   writePost,
   getDetailPost,
+  getPostById,
+  getPostByIDAndPassword,
+  updatePost,
 };
